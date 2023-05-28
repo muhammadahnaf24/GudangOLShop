@@ -9,7 +9,6 @@ using namespace std;
 int menu(); int menuProduk(),menuPesanan();
 void tambahPrd(),tampilPrd(),ubahPrd(),hapusPrd(),urutPrd(),cariPrd();
 void tambahPsn(),tampilPsn(),ubahPsn(),hapusPsn(),urutPsn(),cariPsn();
-void swap(int *a, int *b);
 void header();
 
 struct dataProduk //struktur data produk
@@ -28,6 +27,8 @@ struct dataProduk //struktur data produk
 };
 dataProduk produk[100]; //array struktur data produk
 void coutPrd(int i, dataProduk produk[100]); //cetak struktur data produk
+void bsearch(int i, int k, string nama, dataProduk produk[100]);
+void swap(dataProduk *a, dataProduk *b);
 
 struct dataPesanan //struktur data pesanan
 {	
@@ -46,6 +47,7 @@ struct dataPesanan //struktur data pesanan
 };
 dataPesanan pesanan[100]; //array struktur data pesanan
 void coutPsn(int i, dataPesanan pesanan[100]); //cetak struktur data pesanan
+void swap(dataPesanan *a, dataPesanan *b);
 
 int main(){ //main
     while (true) //
@@ -119,6 +121,8 @@ void tambahPrd(){ //fungsi menambah produk
 	cout << " Stok	: "; cin >> produk.stok;
 	cout << " Harga	: "; cin >> produk.harga;
 	produk.writeToFile2();
+	cout << " Data Produk Berhasil Ditambahkan\n";
+	system("pause");
 }
 
 void tampilPrd() //fungsi menampilkan produk
@@ -206,6 +210,7 @@ void ubahPrd(){ //fungsi mengubah produk
 	}
 	data.close();
 	cout << " Data Produk Berhasil Diubah\n";
+	system("pause");
 }
 
 void hapusPrd(){
@@ -248,6 +253,7 @@ void hapusPrd(){
 			<< produk[k].harga << endl;
 	}
 	data.close();
+	cout << " Data Produk Berhasil Dihapus\n";
 	system("pause");
 }
 
@@ -279,9 +285,7 @@ void urutPrd(){ //fungsi mengurutkan produk
 		for(int k=0;k<i-1;k++){ 
 			for(int a=k+1;a<i;a++){ 
 				if(produk[k].harga > produk[a].harga){ //berdasarkan harga paling murah
-					dataProduk temp = produk[k];
-					produk[k] = produk[a];
-					produk[a] = temp;
+					swap(&produk[k],&produk[a]);
 				}
 			}
 		}
@@ -290,9 +294,7 @@ void urutPrd(){ //fungsi mengurutkan produk
 		for(int k=0;k<i-1;k++){
 			for(int a=k+1;a<i;a++){
 				if(produk[k].harga < produk[a].harga){ //berdasarkan harga paling mahal
-					dataProduk temp = produk[k];
-					produk[k] = produk[a];
-					produk[a] = temp;
+					swap(&produk[k],&produk[a]);
 				}
 			}
 		}
@@ -301,9 +303,7 @@ void urutPrd(){ //fungsi mengurutkan produk
 		for(int k=0;k<i-1;k++){
 			for(int a=k+1;a<i;a++){
 				if(produk[k].stok > produk[a].stok){ //berdasarkan stok paling sedikit
-					dataProduk temp = produk[k];
-					produk[k] = produk[a];
-					produk[a] = temp;
+					swap(&produk[k],&produk[a]);
 				}
 			}
 		}
@@ -312,9 +312,7 @@ void urutPrd(){ //fungsi mengurutkan produk
 		for(int k=0;k<i-1;k++){ 
 			for(int a=k+1;a<i;a++){ 
 				if(produk[k].stok < produk[a].stok){ //berdasarkan stok paling banyak
-					dataProduk temp = produk[k];
-					produk[k] = produk[a];
-					produk[a] = temp;
+					swap(&produk[k],&produk[a]);
 				}
 			}
 		}
@@ -365,22 +363,29 @@ void cariPrd(){ //fungsi mencari produk
 	string nama;
 	cin >> nama;
 	system("cls");
-	if (i == 0){
-		cout << " Data tidak ditemukan\n";
-	}
-	else{
-		for(int k=0;k<i;k++){ //looping untuk mencari produk
-		if(produk[k].nama == nama){ //jika produk ditemukan
-			cout << " Data produk yang dicari :\n";
-			cout << " No		: " << produk[k].no << endl;
-			cout << " Nama		: " << produk[k].nama << endl;
-			cout << " Merk		: " << produk[k].merk << endl;
-			cout << " Stok		: " << produk[k].stok << endl;
-			cout << " Harga		: " << produk[k].harga << endl;
-			}
-		}
-	}
+	header();
+	int k=0;
+	bsearch (i,k,nama, produk); //mencari produk berdasarkan nama
 	system("pause");
+}
+
+void bsearch(int i, int k, string nama, dataProduk produk[100]){ //fungsi mencari produk
+	if (produk[k].nama == nama){
+		cout << " Data Produk dengan nama " << nama << " :\n";
+		cout << " No.		: " << produk[k].no << endl
+			<< " Nama		: " << produk[k].nama << endl
+			<< " Merk		: " << produk[k].merk << endl
+			<< " Stok		: " << produk[k].stok << endl
+			<< " Harga		: " << produk[k].harga << endl;
+	}
+	else if (k==i) {
+        cout << "Data Tidak Ditemukan" << endl;
+    }
+    else
+    {
+        k++;
+        bsearch(i,k,nama,produk);
+	}
 }
 
 int menuPesanan() //fungsi menu pesanan
@@ -448,6 +453,7 @@ void tambahPsn(){ //fungsi tambah pesanan
 			<< produk[k].harga << endl;
 	}
 	dataPrd.close();
+	cout << " Data Pesanan Berhasil Ditambahkan\n";
 }
 
 void tampilPsn(){ //fungsi tampil pesanan
@@ -567,8 +573,8 @@ void ubahPsn(){ //fungsi ubah pesanan
 			<< produk[k].harga << endl;
 	}
 	dataPrd.close();
-	
 	cout << " Data Pesanan Berhasil Diubah\n";
+	system("pause");
 }
 
 void hapusPsn(){ //fungsi hapus pesanan
@@ -648,7 +654,7 @@ void hapusPsn(){ //fungsi hapus pesanan
 			<< produk[k].harga << endl;
 	}
 	dataPrd.close();
-	
+	cout << " Data Pesanan Berhasil Dihapus\n";
 	system("pause");
 }
 
@@ -694,8 +700,14 @@ void cariPsn(){ //fungsi cari pesanan
 
 void urutPsn(){
 	system("cls");
-	cout<<"[1] Kode Pesanan\n[2] Tanggal Pesan\n[3] Status\n";
-	cout<<"Urutkan berdasarkan: ";
+	cout << " Urutkan Pesanan berdasarkan :\n";
+	cout << " [1] Kode Pesanan Ascending\n";
+	cout << " [2] Kode Pesanan Desscending\n";
+	cout << " [3] Tanggal Pesan Ascending\n";
+	cout << " [4] Tanggal Pesan Descending\n";
+	cout << " [5] Status Pesanan Ascending\n";
+	cout << " [6] Status Pesanan Descending\n";
+	cout << " Pilih	: ";
 	int urut;
 	cin>>urut;
 	system("cls");
@@ -714,35 +726,56 @@ void urutPsn(){
 		if(!data.eof()) i++;
 	}
 	data.close();
-	if(urut == 1){ //jika urutkan berdasarkan kode pesanan
+	if(urut == 1){ //jika urutkan berdasarkan kode pesanan ascending
 		for(int k=0;k<i-1;k++){
 			for(int a=k+1;a<i;a++){
 				if(pesanan[k].kodePesanan > pesanan[a].kodePesanan){
-					dataPesanan temp = pesanan[k];
-					pesanan[k] = pesanan[a];
-					pesanan[a] = temp;
+					swap(&pesanan[k],&pesanan[a]);
 				}
 			}
 		}
 	}
-	else if(urut == 2){ //jika urutkan berdasarkan tanggal pesan
+	else if(urut == 2){ //jika urutkan berdasarkan kode pesanan descending
+		for(int k=0;k<i-1;k++){
+			for(int a=k+1;a<i;a++){
+				if(pesanan[k].kodePesanan < pesanan[a].kodePesanan){
+					swap(&pesanan[k],&pesanan[a]);
+				}
+			}
+		}
+	}
+	else if(urut == 3){ //jika urutkan berdasarkan tanggal pesan ascending
 		for(int k=0;k<i-1;k++){
 			for(int a=k+1;a<i;a++){
 				if(pesanan[k].tglPesan > pesanan[a].tglPesan){
-					dataPesanan temp = pesanan[k];
-					pesanan[k] = pesanan[a];
-					pesanan[a] = temp;
+					swap(&pesanan[k],&pesanan[a]);
 				}
 			}
 		}
 	}
-	else if(urut == 3){ //jika urutkan berdasarkan status
+	else if(urut == 4){ //jika urutkan berdasarkan tanggal pesan descending
+		for(int k=0;k<i-1;k++){
+			for(int a=k+1;a<i;a++){
+				if(pesanan[k].tglPesan < pesanan[a].tglPesan){
+					swap(&pesanan[k],&pesanan[a]);
+				}
+			}
+		}
+	}
+	else if(urut == 5){ //jika urutkan berdasarkan status ascending
 		for(int k=0;k<i-1;k++){
 			for(int a=k+1;a<i;a++){
 				if(pesanan[k].status > pesanan[a].status){
-					dataPesanan temp = pesanan[k];
-					pesanan[k] = pesanan[a];
-					pesanan[a] = temp;
+					swap(&pesanan[k],&pesanan[a]);
+				}
+			}
+		}
+	}
+	else if(urut == 6){ //jika urutkan berdasarkan status descending
+		for(int k=0;k<i-1;k++){
+			for(int a=k+1;a<i;a++){
+				if(pesanan[k].status < pesanan[a].status){
+					swap(&pesanan[k],&pesanan[a]);
 				}
 			}
 		}
@@ -751,13 +784,36 @@ void urutPsn(){
 		cout<<"Pilihan tidak ada\n";
 	}
 	system("cls");
-	coutPsn(i, pesanan);
-	cout << "Data pesanan telah diurutkan\n";
-	system("pause");
+	coutPsn(i, pesanan); //menampilkan pesanan yang sudah diurutkan
+	cout << endl;
+	cout << " [1] Cari data pesanan\n";
+	cout << " [2] Urutkan lagi\n";
+	cout << " [3] Kembali\n";
+	cout << " Pilih	: ";
+	int pilih;
+	cin >> pilih;
+	if(pilih == 1){
+		cariPsn();
+	}
+	else if(pilih == 2){
+		urutPsn();
+	}
+	else if(pilih == 3){
+		return;
+	}
+	else {
+		cout << " Pilihan tidak ada\n";
+	}
 }
 
-void swap(int *a, int *b) { //fungsi untuk swap
-    int temp = *a;
+void swap(dataProduk *a, dataProduk *b) { //fungsi untuk swap
+    dataProduk temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void swap(dataPesanan *a, dataPesanan *b) { //fungsi untuk swap
+    dataPesanan temp = *a;
     *a = *b;
     *b = temp;
 }
@@ -809,5 +865,4 @@ void coutPsn(int i, dataPesanan pesanan[100]){ //fungsi untuk menampilkan data p
 			<<setiosflags(ios::left)<<setfill(' ')<<setw(20)<<pesanan[k].status<<endl;
 	}
 	cout << "+=========================================================================================+\n";
-
 }
